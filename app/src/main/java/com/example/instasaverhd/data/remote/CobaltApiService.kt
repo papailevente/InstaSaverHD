@@ -12,10 +12,10 @@ interface CobaltApiService {
         "Accept: application/json",
         "Content-Type: application/json"
     )
-    @POST("api/json")
+    @POST("/")
     suspend fun fetchMedia(
         @Body request: CobaltRequest,
-        @Header("User-Agent") userAgent: String = "InstaSaverHD/1.0 (Android)"
+        @Header("User-Agent") userAgent: String = "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
     ): Response<CobaltResponse>
 
     @Headers(
@@ -26,6 +26,6 @@ interface CobaltApiService {
     suspend fun fetchMediaCustomUrl(
         @Url endpointUrl: String,
         @Body request: CobaltRequest,
-        @Header("User-Agent") userAgent: String = "InstaSaverHD/1.0 (Android)"
+        @Header("User-Agent") userAgent: String = "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
     ): Response<CobaltResponse>
 }

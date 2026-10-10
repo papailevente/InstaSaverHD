@@ -26,7 +26,7 @@ data class CobaltErrorDetails(
 
 @JsonClass(generateAdapter = true)
 data class CobaltResponse(
-    @field:Json(name = "status") val status: String,
+    @field:Json(name = "status") val status: String? = null,
     @field:Json(name = "url") val url: String? = null,
     @field:Json(name = "filename") val filename: String? = null,
     @field:Json(name = "picker") val picker: List<CobaltPickerItem>? = null,

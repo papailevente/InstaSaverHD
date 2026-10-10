@@ -56,4 +56,21 @@ class CobaltModelsTest {
         assertEquals("video", response?.picker?.get(0)?.type)
         assertEquals("https://stream.cobalt.tools/video1.mp4", response?.picker?.get(0)?.url)
     }
+
+    @Test
+    fun parseErrorResponse_success() {
+        val json = """
+            {
+                "status": "error",
+                "text": "link invalid"
+            }
+        """.trimIndent()
+
+        val adapter = moshi.adapter(CobaltResponse::class.java)
+        val response = adapter.fromJson(json)
+
+        assertNotNull(response)
+        assertEquals("error", response?.status)
+        assertEquals("link invalid", response?.text)
+    }
 }

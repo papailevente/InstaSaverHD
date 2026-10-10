@@ -59,76 +59,130 @@ class DownloadRepositoryImpl(
             return Result.failure(IllegalArgumentException("Invalid URL format. Please enter a valid Instagram link."))
         }
 
-        return try {
-            val request = CobaltRequest(url = cleanedUrl)
-            val response = cobaltApiService.fetchMedia(request)
+        val request = CobaltRequest(url = cleanedUrl)
+        val endpoints = listOf(
+            "https://api.cobalt.tools/",
+            "https://cobalt.api.scraye.com/",
+            "https://co.wuk.sh/"
+        )
 
-            if (response.isSuccessful && response.body() != null) {
-                val body = response.body()!!
-                when (body.status) {
-                    "tunnel", "redirect", "stream" -> {
-                        val streamUrl = body.url
-                        if (streamUrl.isNullOrBlank()) {
-                            Result.failure(Exception("Cobalt API returned empty media stream URL."))
-                        } else {
-                            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                            val defaultTitle = "InstaSaver_$timeStamp"
-                            val filename = body.filename ?: "$defaultTitle.mp4"
+        var lastErrorMessage = "Unable to process Instagram link."
 
-                            Result.success(
-                                MediaMetadata(
-                                    originalUrl = cleanedUrl,
-                                    streamUrl = streamUrl,
-                                    title = defaultTitle,
-                                    thumbnail = null,
-                                    filename = filename,
-                                    pickerItems = emptyList()
-                                )
-                            )
-                        }
-                    }
-                    "picker" -> {
-                        val picker = body.picker
-                        if (!picker.isNullOrEmpty()) {
-                            val firstVideo = picker.firstOrNull { it.type == "video" } ?: picker.first()
-                            val streamUrl = firstVideo.url ?: body.url
-                            if (streamUrl.isNullOrBlank()) {
-                                Result.failure(Exception("No downloadable URL found in media picker."))
-                            } else {
+        for ((index, endpoint) in endpoints.withIndex()) {
+            try {
+                val response = if (index == 0) {
+                    cobaltApiService.fetchMedia(request)
+                } else {
+                    cobaltApiService.fetchMediaCustomUrl(endpoint, request)
+                }
+
+                if (response.isSuccessful && response.body() != null) {
+                    val body = response.body()!!
+                    when (body.status) {
+                        "tunnel", "redirect", "stream" -> {
+                            val streamUrl = body.url
+                            if (!streamUrl.isNullOrBlank()) {
                                 val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                                 val defaultTitle = "InstaSaver_$timeStamp"
                                 val filename = body.filename ?: "$defaultTitle.mp4"
 
-                                Result.success(
+                                return Result.success(
                                     MediaMetadata(
                                         originalUrl = cleanedUrl,
                                         streamUrl = streamUrl,
                                         title = defaultTitle,
-                                        thumbnail = firstVideo.thumb,
+                                        thumbnail = null,
                                         filename = filename,
-                                        pickerItems = picker
+                                        pickerItems = emptyList()
                                     )
                                 )
                             }
-                        } else {
-                            Result.failure(Exception("Picker returned no items."))
+                        }
+                        "picker" -> {
+                            val picker = body.picker
+                            if (!picker.isNullOrEmpty()) {
+                                val firstVideo = picker.firstOrNull { it.type == "video" } ?: picker.first()
+                                val streamUrl = firstVideo.url ?: body.url
+                                if (!streamUrl.isNullOrBlank()) {
+                                    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                                    val defaultTitle = "InstaSaver_$timeStamp"
+                                    val filename = body.filename ?: "$defaultTitle.mp4"
+
+                                    return Result.success(
+                                        MediaMetadata(
+                                            originalUrl = cleanedUrl,
+                                            streamUrl = streamUrl,
+                                            title = defaultTitle,
+                                            thumbnail = firstVideo.thumb,
+                                            filename = filename,
+                                            pickerItems = picker
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        "error" -> {
+                            lastErrorMessage = parseErrorMessage(body.text ?: body.errorDetails?.code)
+                        }
+                        else -> {
+                            if (!body.url.isNullOrBlank()) {
+                                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                                val defaultTitle = "InstaSaver_$timeStamp"
+                                return Result.success(
+                                    MediaMetadata(
+                                        originalUrl = cleanedUrl,
+                                        streamUrl = body.url,
+                                        title = defaultTitle,
+                                        thumbnail = null,
+                                        filename = body.filename ?: "$defaultTitle.mp4",
+                                        pickerItems = emptyList()
+                                    )
+                                )
+                            }
                         }
                     }
-                    "error" -> {
-                        val errorMsg = body.text ?: body.errorDetails?.code ?: "Unable to process Instagram link with Cobalt API."
-                        Result.failure(Exception(errorMsg))
-                    }
-                    else -> {
-                        Result.failure(Exception("Unexpected response status from Cobalt API: ${body.status}"))
-                    }
+                } else {
+                    val errorBodyStr = response.errorBody()?.string()
+                    lastErrorMessage = parseErrorMessage(errorBodyStr, response.code())
                 }
-            } else {
-                val errorBodyStr = response.errorBody()?.string()
-                Result.failure(Exception("API Error (${response.code()}): ${errorBodyStr ?: response.message()}"))
+            } catch (e: Exception) {
+                e.printStackTrace()
+                lastErrorMessage = e.localizedMessage ?: "Network connection issue. Please try again."
             }
+        }
+
+        return Result.failure(Exception(lastErrorMessage))
+    }
+
+    private fun parseErrorMessage(rawError: String?, httpCode: Int? = null): String {
+        if (rawError.isNullOrBlank()) {
+            return if (httpCode != null) "Server error ($httpCode). Please try again." else "Unable to fetch media from Instagram link."
+        }
+        return try {
+            val jsonObject = org.json.JSONObject(rawError)
+            val text = jsonObject.optString("text")
+            if (text.isNotBlank()) {
+                return text
+            }
+            val errorObj = jsonObject.optJSONObject("error")
+            val code = errorObj?.optString("code")
+            if (!code.isNullOrBlank()) {
+                return when (code) {
+                    "error.api.link.invalid" -> "Invalid or unsupported Instagram link."
+                    "error.api.fetch.fail" -> "Unable to fetch media from Instagram. The post may be private."
+                    "error.api.rate_limit" -> "Rate limit reached. Please wait a moment and try again."
+                    else -> "Instagram media request failed ($code)."
+                }
+            }
+            if (httpCode != null) "Request failed ($httpCode)." else "Unable to process Instagram link."
         } catch (e: Exception) {
-            e.printStackTrace()
-            Result.failure(e)
+            if (rawError.contains("cobalt v7 api has been shut down", ignoreCase = true)) {
+                "Service updating to Cobalt v10. Please try again."
+            } else if (rawError.startsWith("{") && rawError.endsWith("}")) {
+                "Unable to process Instagram link. Please ensure the link is public."
+            } else {
+                rawError
+            }
         }
     }
 
