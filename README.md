@@ -4,6 +4,15 @@
 
 ---
 
+## 📥 Direct APK Downloads (v1.1.0)
+
+Download the latest pre-compiled Android APKs directly from the repository:
+
+- 📱 **[Download InstaSaver HD Standard APK v1.1.0](https://github.com/papailevente/InstaSaverHD/raw/main/releases/InstaSaverHD-v1.1.0-standard.apk)** (`com.example.instasaverhd`)
+- ⚡ **[Download InstaSaver HD Pro APK v1.1.0](https://github.com/papailevente/InstaSaverHD/raw/main/releases/InstaSaverHD-v1.1.0-pro.apk)** (`com.example.instasaverhd.pro`)
+
+---
+
 ## 🌟 Features
 
 - **Single-Tap URL Fetching & Validation**: Paste Instagram URLs with auto-cleaning and instant format validation.
@@ -17,6 +26,17 @@
 
 ---
 
+## 📱 Product Variants
+
+InstaSaver HD supports two build flavors under the `tier` dimension:
+
+| Variant | Application ID | Version Name | Download Link |
+| :--- | :--- | :--- | :--- |
+| **Standard** | `com.example.instasaverhd` | `1.1.0-standard` | [InstaSaverHD-v1.1.0-standard.apk](https://github.com/papailevente/InstaSaverHD/raw/main/releases/InstaSaverHD-v1.1.0-standard.apk) |
+| **Pro HD** | `com.example.instasaverhd.pro` | `1.1.0-pro` | [InstaSaverHD-v1.1.0-pro.apk](https://github.com/papailevente/InstaSaverHD/raw/main/releases/InstaSaverHD-v1.1.0-pro.apk) |
+
+---
+
 ## 🏗 Tech Stack & Architecture
 
 - **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose) with Material 3 Design & Material Icons
@@ -27,17 +47,6 @@
 - **Media Playback**: [Jetpack Media3 ExoPlayer](https://developer.android.com/guide/topics/media/media3)
 - **Image Loading**: [Coil Compose](https://coil-kt.github.io/coil/compose/)
 - **Build System**: Gradle 9.6 + AGP 9.4 + KSP 2.3 + Java 21
-
----
-
-## 📱 Product Variants
-
-InstaSaver HD supports two build flavors under the `tier` dimension:
-
-| Variant | Application ID | Version Name | Key Features |
-| :--- | :--- | :--- | :--- |
-| **Standard** | `com.example.instasaverhd` | `1.0-standard` | Core downloader, ExoPlayer preview, local gallery |
-| **Pro HD** | `com.example.instasaverhd.pro` | `1.0-pro` | Ultra-fast multi-stream processing, Pro UI badge |
 
 ---
 
@@ -58,11 +67,8 @@ cd InstaSaverHD
 # Run unit tests across all variants
 ./gradlew test
 
-# Build Standard Debug APK
-./gradlew assembleStandardDebug
-
-# Build Pro Debug APK
-./gradlew assembleProDebug
+# Build Standard Release APK
+./gradlew assembleStandardRelease
 
 # Build Pro Release APK
 ./gradlew assembleProRelease
