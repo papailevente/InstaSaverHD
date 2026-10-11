@@ -34,4 +34,11 @@ class InstagramUrlParserTest {
         val expected = "https://www.instagram.com/reel/C123456/"
         assertEquals(expected, InstagramUrlParser.cleanUrl(rawUrl))
     }
+
+    @Test
+    fun cleanUrl_extractsUrlFromSharedText() {
+        val sharedText = "Hey, look at this cool video: https://www.instagram.com/reel/C987654/?igsh=xyz123"
+        val expected = "https://www.instagram.com/reel/C987654/"
+        assertEquals(expected, InstagramUrlParser.cleanUrl(sharedText))
+    }
 }

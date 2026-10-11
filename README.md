@@ -4,19 +4,20 @@
 
 ---
 
-## 📥 Direct APK Downloads (v1.1.0)
+## 📥 Direct APK Downloads (v1.2.0)
 
 Download the latest pre-compiled Android APKs directly from the repository:
 
-- 📱 **[Download InstaSaver HD Standard APK v1.1.0](https://github.com/papailevente/InstaSaverHD/raw/main/releases/InstaSaverHD-v1.1.0-standard.apk)** (`com.example.instasaverhd`)
-- ⚡ **[Download InstaSaver HD Pro APK v1.1.0](https://github.com/papailevente/InstaSaverHD/raw/main/releases/InstaSaverHD-v1.1.0-pro.apk)** (`com.example.instasaverhd.pro`)
+- 📱 **[Download InstaSaver HD Standard APK v1.2.0](https://github.com/papailevente/InstaSaverHD/releases/download/v1.2.0/InstaSaverHD-v1.2.0-standard.apk)** (`com.example.instasaverhd`)
+- ⚡ **[Download InstaSaver HD Pro APK v1.2.0](https://github.com/papailevente/InstaSaverHD/releases/download/v1.2.0/InstaSaverHD-v1.2.0-pro.apk)** (`com.example.instasaverhd.pro`)
 
 ---
 
 ## 🌟 Features
 
-- **Single-Tap URL Fetching & Validation**: Paste Instagram URLs with auto-cleaning and instant format validation.
-- **Cobalt API Integration**: Fast metadata and media stream retrieval without requiring login or user credentials.
+- **System "Share To" Integration**: Share Instagram links directly to InstaSaver HD from Signal, WhatsApp, Instagram, or Chrome.
+- **Single-Tap URL Fetching & Validation**: Auto-cleans Instagram links and strips surrounding message text automatically.
+- **Cobalt v10 API Integration**: Fast metadata and media stream retrieval with multi-instance failover support.
 - **Embedded ExoPlayer Preview**: Play HD video previews directly inside the home feed before downloading.
 - **Full-Screen Media Viewer**: Full controls, playback speed toggles, and loop support via Media3 ExoPlayer.
 - **Background Downloads**: Managed via Android `DownloadManager` with status updates and progress notifications.
@@ -32,8 +33,8 @@ InstaSaver HD supports two build flavors under the `tier` dimension:
 
 | Variant | Application ID | Version Name | Download Link |
 | :--- | :--- | :--- | :--- |
-| **Standard** | `com.example.instasaverhd` | `1.1.0-standard` | [InstaSaverHD-v1.1.0-standard.apk](https://github.com/papailevente/InstaSaverHD/raw/main/releases/InstaSaverHD-v1.1.0-standard.apk) |
-| **Pro HD** | `com.example.instasaverhd.pro` | `1.1.0-pro` | [InstaSaverHD-v1.1.0-pro.apk](https://github.com/papailevente/InstaSaverHD/raw/main/releases/InstaSaverHD-v1.1.0-pro.apk) |
+| **Standard** | `com.example.instasaverhd` | `1.2.0-standard` | [InstaSaverHD-v1.2.0-standard.apk](https://github.com/papailevente/InstaSaverHD/releases/download/v1.2.0/InstaSaverHD-v1.2.0-standard.apk) |
+| **Pro HD** | `com.example.instasaverhd.pro` | `1.2.0-pro` | [InstaSaverHD-v1.2.0-pro.apk](https://github.com/papailevente/InstaSaverHD/releases/download/v1.2.0/InstaSaverHD-v1.2.0-pro.apk) |
 
 ---
 
@@ -82,7 +83,7 @@ The repository includes unit tests covering data models, API responses, URL pars
 
 - `MainViewModelTest`: Verifies state flow transitions, URL validation, and download actions.
 - `CobaltModelsTest`: Validates Moshi serialization/deserialization for Cobalt API models.
-- `InstagramUrlParserTest`: Tests url cleaning and validation.
+- `InstagramUrlParserTest`: Tests url cleaning and embedded link extraction.
 
 Run all unit tests:
 ```bash

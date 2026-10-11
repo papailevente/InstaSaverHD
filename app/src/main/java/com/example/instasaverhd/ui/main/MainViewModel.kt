@@ -77,6 +77,16 @@ class MainViewModel(
         }
     }
 
+    fun onSharedUrlReceived(sharedText: String) {
+        val extractedUrl = InstagramUrlParser.cleanUrl(sharedText)
+        if (extractedUrl.isNotBlank()) {
+            onUrlChanged(extractedUrl)
+            if (InstagramUrlParser.isValidUrl(extractedUrl)) {
+                fetchMedia()
+            }
+        }
+    }
+
     fun onClearInput() {
         _uiState.update {
             it.copy(

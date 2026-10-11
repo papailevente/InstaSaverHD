@@ -1,6 +1,8 @@
 package com.example.instasaverhd.utils
 
 object InstagramUrlParser {
+    private val instagramUrlRegex = Regex("""https?://(?:www\.)?(?:instagram\.com|instagr\.am)/[^\s]+""", RegexOption.IGNORE_CASE)
+
     fun isValidUrl(url: String): Boolean {
         val trimmed = url.trim()
         if (trimmed.isBlank()) return false
@@ -12,7 +14,9 @@ object InstagramUrlParser {
         return trimmed.contains("instagram.com") || trimmed.contains("instagr.am")
     }
 
-    fun cleanUrl(url: String): String {
-        return url.trim().split("?").firstOrNull() ?: url.trim()
+    fun cleanUrl(input: String): String {
+        val trimmed = input.trim()
+        val matchedUrl = instagramUrlRegex.find(trimmed)?.value ?: trimmed
+        return matchedUrl.split("?").firstOrNull() ?: matchedUrl
     }
 }
