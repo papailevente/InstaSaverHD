@@ -63,10 +63,11 @@ class DownloadRepositoryImpl(
         val endpoints = listOf(
             "https://api.cobalt.tools/",
             "https://cobalt.api.scraye.com/",
-            "https://co.wuk.sh/"
+            "https://cobalt.qtf.rs/",
+            "https://cobalt.stream/"
         )
 
-        var lastErrorMessage = "Unable to process Instagram link."
+        var lastErrorMessage: String? = null
 
         for ((index, endpoint) in endpoints.withIndex()) {
             try {
@@ -147,11 +148,13 @@ class DownloadRepositoryImpl(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                lastErrorMessage = e.localizedMessage ?: "Network connection issue. Please try again."
+                if (lastErrorMessage == null) {
+                    lastErrorMessage = "Unable to connect to media server. Please check your internet connection."
+                }
             }
         }
 
-        return Result.failure(Exception(lastErrorMessage))
+        return Result.failure(Exception(lastErrorMessage ?: "Unable to fetch media from Instagram link. Please check if the post is public."))
     }
 
     private fun parseErrorMessage(rawError: String?, httpCode: Int? = null): String {

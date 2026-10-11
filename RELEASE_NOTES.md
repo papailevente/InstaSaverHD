@@ -1,18 +1,16 @@
-# Release Notes - InstaSaver HD v1.3.0 (Version Code 4)
+# Release Notes - InstaSaver HD v1.4.0 (Version Code 5)
 
-## 🚀 What's New in Version 1.3.0
+## 🚀 What's New in Version 1.4.0
 
-### 🔄 Auto-Update Checker & In-App Installer
-- **Automatic Startup Check**: On launch, the app automatically checks the GitHub Releases API for new updates.
-- **Update Dialog**: Displays a frosted glass dialog showing release notes, version tag, and options to **"Update Now"** or **"Later"**.
-- **In-App APK Installer**: Downloads matching variant update APK (`standard` or `pro`) via `DownloadManager` and prompts instant installation via Android `FileProvider`.
-
-### 📲 System "Share To" Menu Integration
-- **Direct Share Support**: Share Instagram links directly to InstaSaver HD from Signal, WhatsApp, Instagram, or Chrome.
+### 🌐 Fixed Server Fallbacks & DNS Exceptions
+- **Removed Shut-Down Domains**: Completely removed `co.wuk.sh` from server fallback list to eliminate `Unable to resolve host` DNS exception popups.
+- **Updated Active Cobalt Instances**: Added active Cobalt v10 server list (`api.cobalt.tools`, `cobalt.api.scraye.com`, `cobalt.qtf.rs`, `cobalt.stream`).
+- **Clean Error Formatting**: Improved exception handling to ensure raw DNS resolution errors are hidden and user-friendly error guidance is displayed.
+- **Optimized Request Payload**: Refined `CobaltRequest` payload structure for Cobalt v10 compatibility.
 
 ### 📥 Download APKs
-- 📱 [Download Standard Variant APK (v1.3.0)](https://github.com/papailevente/InstaSaverHD/releases/download/v1.3.0/InstaSaverHD-v1.3.0-standard.apk)
-- ⚡ [Download Pro Variant APK (v1.3.0)](https://github.com/papailevente/InstaSaverHD/releases/download/v1.3.0/InstaSaverHD-v1.3.0-pro.apk)
+- 📱 [Download Standard Variant APK (v1.4.0)](https://github.com/papailevente/InstaSaverHD/releases/download/v1.4.0/InstaSaverHD-v1.4.0-standard.apk)
+- ⚡ [Download Pro Variant APK (v1.4.0)](https://github.com/papailevente/InstaSaverHD/releases/download/v1.4.0/InstaSaverHD-v1.4.0-pro.apk)
 
 ---
 

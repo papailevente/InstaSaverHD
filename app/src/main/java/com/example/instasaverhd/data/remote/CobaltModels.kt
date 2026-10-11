@@ -6,9 +6,8 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class CobaltRequest(
     @field:Json(name = "url") val url: String,
-    @field:Json(name = "videoQuality") val videoQuality: String = "max",
-    @field:Json(name = "downloadMode") val downloadMode: String = "auto",
-    @field:Json(name = "youtubeVideoCodec") val youtubeVideoCodec: String = "h264"
+    @field:Json(name = "videoQuality") val videoQuality: String? = "max",
+    @field:Json(name = "downloadMode") val downloadMode: String? = "auto"
 )
 
 @JsonClass(generateAdapter = true)
