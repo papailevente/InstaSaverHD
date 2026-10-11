@@ -8,6 +8,8 @@ import com.example.instasaverhd.data.local.DownloadItem
 import com.example.instasaverhd.data.repository.DownloadRepository
 import com.example.instasaverhd.data.repository.DownloadRepositoryImpl
 import com.example.instasaverhd.data.repository.MediaMetadata
+import com.example.instasaverhd.data.repository.UpdateInfo
+import com.example.instasaverhd.data.repository.UpdateManager
 import com.example.instasaverhd.utils.InstagramUrlParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,11 +32,15 @@ data class MainUiState(
     val activePreviewMetadata: MediaMetadata? = null,
     val downloadsList: List<DownloadItem> = emptyList(),
     val isDownloading: Boolean = false,
-    val snackbarMessage: String? = null
+    val snackbarMessage: String? = null,
+    val updateInfo: UpdateInfo? = null,
+    val isDownloadingUpdate: Boolean = false,
+    val showUpdateDialog: Boolean = false
 )
 
 class MainViewModel(
-    private val repository: DownloadRepository
+    private val repository: DownloadRepository,
+    private val updateManager: UpdateManager? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -42,6 +48,7 @@ class MainViewModel(
 
     init {
         observeDownloads()
+        checkForAppUpdates()
     }
 
     private fun observeDownloads() {
@@ -52,6 +59,44 @@ class MainViewModel(
                 }
             }
         }
+    }
+
+    fun checkForAppUpdates() {
+        updateManager?.let { manager ->
+            viewModelScope.launch {
+                val result = manager.checkForUpdates()
+                result.getOrNull()?.let { info ->
+                    if (info.isUpdateAvailable) {
+                        _uiState.update {
+                            it.copy(
+                                updateInfo = info,
+                                showUpdateDialog = true
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun startUpdateDownload() {
+        val info = _uiState.value.updateInfo ?: return
+        val manager = updateManager ?: return
+
+        _uiState.update { it.copy(isDownloadingUpdate = true) }
+
+        val fileName = "InstaSaverHD-v${info.latestVersion}-update.apk"
+        manager.downloadUpdateApk(info.downloadUrl, fileName) { downloadId ->
+            _uiState.update {
+                it.copy(
+                    snackbarMessage = "Downloading update in background... Check notifications."
+                )
+            }
+        }
+    }
+
+    fun dismissUpdateDialog() {
+        _uiState.update { it.copy(showUpdateDialog = false) }
     }
 
     fun onUrlChanged(newUrl: String) {
@@ -188,8 +233,10 @@ class MainViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                val repository = DownloadRepositoryImpl(context.applicationContext)
-                return MainViewModel(repository) as T
+                val appContext = context.applicationContext
+                val repository = DownloadRepositoryImpl(appContext)
+                val updateManager = UpdateManager(appContext)
+                return MainViewModel(repository, updateManager) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

@@ -49,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.instasaverhd.ui.components.GlassCard
 import com.example.instasaverhd.ui.components.InstagramVideoPlayer
+import com.example.instasaverhd.ui.components.UpdateDialog
 import com.example.instasaverhd.ui.components.UrlInputBar
 import com.example.instasaverhd.ui.theme.DarkBackground
 import com.example.instasaverhd.ui.theme.InstaPink
@@ -78,6 +79,8 @@ fun HomeScreen(
         onClearClicked = viewModel::onClearInput,
         onFetchClicked = viewModel::fetchMedia,
         onDownloadClick = { metadata -> viewModel.startDownload(metadata) },
+        onUpdateClick = viewModel::startUpdateDownload,
+        onDismissUpdateClick = viewModel::dismissUpdateDialog,
         modifier = modifier
     )
 }
@@ -91,8 +94,19 @@ fun HomeScreenContent(
     onClearClicked: () -> Unit,
     onFetchClicked: () -> Unit,
     onDownloadClick: (com.example.instasaverhd.data.repository.MediaMetadata) -> Unit,
+    onUpdateClick: () -> Unit = {},
+    onDismissUpdateClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    if (uiState.showUpdateDialog && uiState.updateInfo != null) {
+        UpdateDialog(
+            updateInfo = uiState.updateInfo,
+            isDownloading = uiState.isDownloadingUpdate,
+            onUpdateClick = onUpdateClick,
+            onDismissClick = onDismissUpdateClick
+        )
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = DarkBackground,

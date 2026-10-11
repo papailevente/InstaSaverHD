@@ -32,4 +32,13 @@ object NetworkClient {
             .build()
             .create(CobaltApiService::class.java)
     }
+
+    val gitHubReleaseService: GitHubReleaseService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://api.github.com/")
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(GitHubReleaseService::class.java)
+    }
 }
