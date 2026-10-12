@@ -35,8 +35,7 @@ class UpdateManager(
 
                 val isNewer = isVersionNewer(latestTag, currentVersion)
 
-                val assetKeyword = if (BuildConfig.IS_PRO_VERSION) "pro" else "standard"
-                val matchingAsset = release.assets.firstOrNull { it.name.contains(assetKeyword, ignoreCase = true) }
+                val matchingAsset = release.assets.firstOrNull { it.name.endsWith(".apk", ignoreCase = true) }
                     ?: release.assets.firstOrNull()
 
                 val downloadUrl = matchingAsset?.downloadUrl.orEmpty()

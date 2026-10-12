@@ -64,7 +64,9 @@ class DownloadRepositoryImpl(
             "https://api.cobalt.tools/",
             "https://cobalt.api.scraye.com/",
             "https://cobalt.qtf.rs/",
-            "https://cobalt.stream/"
+            "https://cobalt.stream/",
+            "https://cobalt-api.kwiatekmom.pl/",
+            "https://cobalt.xyx.moe/"
         )
 
         var lastErrorMessage: String? = null
@@ -154,7 +156,14 @@ class DownloadRepositoryImpl(
             }
         }
 
-        return Result.failure(Exception(lastErrorMessage ?: "Unable to fetch media from Instagram link. Please check if the post is public."))
+        val currentError = lastErrorMessage
+        val finalMsg = if (currentError.isNullOrBlank() || currentError.contains("authentication", ignoreCase = true) || currentError.contains("jwt", ignoreCase = true)) {
+            "Unable to fetch Instagram media. Please check if the post is public or try again in a moment."
+        } else {
+            currentError
+        }
+
+        return Result.failure(Exception(finalMsg))
     }
 
     private fun parseErrorMessage(rawError: String?, httpCode: Int? = null): String {
@@ -164,25 +173,28 @@ class DownloadRepositoryImpl(
         return try {
             val jsonObject = org.json.JSONObject(rawError)
             val text = jsonObject.optString("text")
-            if (text.isNotBlank()) {
-                return text
-            }
             val errorObj = jsonObject.optJSONObject("error")
-            val code = errorObj?.optString("code")
-            if (!code.isNullOrBlank()) {
-                return when (code) {
-                    "error.api.link.invalid" -> "Invalid or unsupported Instagram link."
-                    "error.api.fetch.fail" -> "Unable to fetch media from Instagram. The post may be private."
-                    "error.api.rate_limit" -> "Rate limit reached. Please wait a moment and try again."
-                    else -> "Instagram media request failed ($code)."
-                }
+            val code = errorObj?.optString("code") ?: text
+
+            when {
+                code.contains("error.api.auth", ignoreCase = true) || code.contains("jwt", ignoreCase = true) ->
+                    "Media server requires authentication. Trying backup server..."
+                code.contains("link.invalid", ignoreCase = true) ->
+                    "Invalid or unsupported Instagram link."
+                code.contains("fetch.fail", ignoreCase = true) ->
+                    "Unable to fetch media from Instagram. The post may be private."
+                code.contains("rate_limit", ignoreCase = true) ->
+                    "Server busy. Trying backup server..."
+                text.isNotBlank() && !text.contains("jwt", ignoreCase = true) -> text
+                else -> "Unable to process Instagram media link."
             }
-            if (httpCode != null) "Request failed ($httpCode)." else "Unable to process Instagram link."
         } catch (e: Exception) {
-            if (rawError.contains("cobalt v7 api has been shut down", ignoreCase = true)) {
+            if (rawError.contains("jwt", ignoreCase = true) || rawError.contains("auth", ignoreCase = true)) {
+                "Media server requires authentication. Trying backup server..."
+            } else if (rawError.contains("cobalt v7 api has been shut down", ignoreCase = true)) {
                 "Service updating to Cobalt v10. Please try again."
             } else if (rawError.startsWith("{") && rawError.endsWith("}")) {
-                "Unable to process Instagram link. Please ensure the link is public."
+                "Unable to process Instagram link. Please ensure the post is public."
             } else {
                 rawError
             }

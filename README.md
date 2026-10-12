@@ -4,18 +4,18 @@
 
 ---
 
-## 📥 Direct APK Downloads (v1.4.0)
+## 📥 Direct APK Download (v1.5.0)
 
-Download the latest pre-compiled Android APKs directly from the repository:
+Download the official single Android APK directly from the repository:
 
-- 📱 **[Download InstaSaver HD Standard APK v1.4.0](https://github.com/papailevente/InstaSaverHD/releases/download/v1.4.0/InstaSaverHD-v1.4.0-standard.apk)** (`com.example.instasaverhd`)
-- ⚡ **[Download InstaSaver HD Pro APK v1.4.0](https://github.com/papailevente/InstaSaverHD/releases/download/v1.4.0/InstaSaverHD-v1.4.0-pro.apk)** (`com.example.instasaverhd.pro`)
+- 📱 **[Download InstaSaver HD APK v1.5.0](https://github.com/papailevente/InstaSaverHD/releases/download/v1.5.0/InstaSaverHD-v1.5.0.apk)** (`com.example.instasaverhd`)
 
 ---
 
 ## 🌟 Features
 
-- **Reliable Fallback Servers**: Clean Cobalt v10 API requests with updated active server instance list (`api.cobalt.tools`, `cobalt.api.scraye.com`, `cobalt.qtf.rs`, `cobalt.stream`).
+- **Open Public Cobalt Instances & JWT Bypass**: Bypasses private JWT auth restrictions by automatically routing through open public Cobalt v10 server instances (`api.cobalt.tools`, `cobalt.api.scraye.com`, `cobalt.qtf.rs`, `cobalt.stream`, `cobalt-api.kwiatekmom.pl`, `cobalt.xyx.moe`).
+- **Clean User Guidance**: Sanitizes API response errors to hide technical codes (`error.api.auth.jwt.missing`) and show clear, human-readable guidance.
 - **Auto-Update Checker & In-App Installer**: Automatically checks GitHub Releases on startup and prompts the user to download and install new version updates.
 - **System "Share To" Integration**: Share Instagram links directly to InstaSaver HD from Signal, WhatsApp, Instagram, or Chrome.
 - **Single-Tap URL Fetching & Validation**: Auto-cleans Instagram links and strips surrounding message text automatically.
@@ -24,18 +24,6 @@ Download the latest pre-compiled Android APKs directly from the repository:
 - **Background Downloads**: Managed via Android `DownloadManager` with status updates and progress notifications.
 - **Local Gallery Management**: Offline access to downloaded items stored in Room DB with share, delete, and filtering options.
 - **Modern Glassmorphic UI**: Custom dark theme with frosted glass cards (`GlassCard`) and Instagram-inspired gradients.
-- **Product Flavors**: Supports `standard` (free) and `pro` (HD Ultra Fast) build variants.
-
----
-
-## 📱 Product Variants
-
-InstaSaver HD supports two build flavors under the `tier` dimension:
-
-| Variant | Application ID | Version Name | Download Link |
-| :--- | :--- | :--- | :--- |
-| **Standard** | `com.example.instasaverhd` | `1.4.0-standard` | [InstaSaverHD-v1.4.0-standard.apk](https://github.com/papailevente/InstaSaverHD/releases/download/v1.4.0/InstaSaverHD-v1.4.0-standard.apk) |
-| **Pro HD** | `com.example.instasaverhd.pro` | `1.4.0-pro` | [InstaSaverHD-v1.4.0-pro.apk](https://github.com/papailevente/InstaSaverHD/releases/download/v1.4.0/InstaSaverHD-v1.4.0-pro.apk) |
 
 ---
 
@@ -66,14 +54,11 @@ InstaSaver HD supports two build flavors under the `tier` dimension:
 git clone https://github.com/papailevente/InstaSaverHD.git
 cd InstaSaverHD
 
-# Run unit tests across all variants
+# Run unit tests
 ./gradlew test
 
-# Build Standard Release APK
-./gradlew assembleStandardRelease
-
-# Build Pro Release APK
-./gradlew assembleProRelease
+# Build Release APK
+./gradlew assembleRelease
 ```
 
 ---

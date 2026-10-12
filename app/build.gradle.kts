@@ -13,12 +13,10 @@ android {
         applicationId = "com.example.instasaverhd"
         minSdk = 35
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.4.0"
+        versionCode = 6
+        versionName = "1.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("boolean", "IS_PRO_VERSION", "false")
-        buildConfigField("String", "VARIANT_NAME", "\"Standard\"")
     }
 
     buildTypes {
@@ -27,24 +25,6 @@ android {
             optimization {
                 enable = false
             }
-        }
-    }
-
-    flavorDimensions += "tier"
-    productFlavors {
-        create("standard") {
-            dimension = "tier"
-            applicationId = "com.example.instasaverhd"
-            versionNameSuffix = "-standard"
-            buildConfigField("boolean", "IS_PRO_VERSION", "false")
-            buildConfigField("String", "VARIANT_NAME", "\"Standard\"")
-        }
-        create("pro") {
-            dimension = "tier"
-            applicationIdSuffix = ".pro"
-            versionNameSuffix = "-pro"
-            buildConfigField("boolean", "IS_PRO_VERSION", "true")
-            buildConfigField("String", "VARIANT_NAME", "\"Pro HD\"")
         }
     }
     compileOptions {

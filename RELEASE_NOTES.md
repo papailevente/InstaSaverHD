@@ -1,19 +1,19 @@
-# Release Notes - InstaSaver HD v1.4.0 (Version Code 5)
+# Release Notes - InstaSaver HD v1.5.0 (Version Code 6)
 
-## 🚀 What's New in Version 1.4.0
+## 🚀 What's New in Version 1.5.0
 
-### 🌐 Fixed Server Fallbacks & DNS Exceptions
-- **Removed Shut-Down Domains**: Completely removed `co.wuk.sh` from server fallback list to eliminate `Unable to resolve host` DNS exception popups.
-- **Updated Active Cobalt Instances**: Added active Cobalt v10 server list (`api.cobalt.tools`, `cobalt.api.scraye.com`, `cobalt.qtf.rs`, `cobalt.stream`).
-- **Clean Error Formatting**: Improved exception handling to ensure raw DNS resolution errors are hidden and user-friendly error guidance is displayed.
-- **Optimized Request Payload**: Refined `CobaltRequest` payload structure for Cobalt v10 compatibility.
+### 📱 Unified Single App Release
+- **Simplified Single Version**: Removed product flavors (`pro` / `standard`) to maintain a single unified InstaSaver HD app build.
 
-### 📥 Download APKs
-- 📱 [Download Standard Variant APK (v1.4.0)](https://github.com/papailevente/InstaSaverHD/releases/download/v1.4.0/InstaSaverHD-v1.4.0-standard.apk)
-- ⚡ [Download Pro Variant APK (v1.4.0)](https://github.com/papailevente/InstaSaverHD/releases/download/v1.4.0/InstaSaverHD-v1.4.0-pro.apk)
+### 🌐 Fixed JWT Auth Error (`error.api.auth.jwt.missing`)
+- **JWT Error Failover**: Automatically detects instances requiring JWT authentication (`error.api.auth.jwt.missing`) and skips them to route through open public Cobalt v10 server instances (`api.cobalt.tools`, `cobalt.api.scraye.com`, `cobalt.qtf.rs`, `cobalt.stream`, `cobalt-api.kwiatekmom.pl`, `cobalt.xyx.moe`).
+- **Sanitized Error Messaging**: Suppressed raw technical error codes (`error.api.auth.jwt.missing`) in favor of clear human-readable guidance.
+
+### 📥 Download APK
+- 📱 [Download InstaSaver HD APK (v1.5.0)](https://github.com/papailevente/InstaSaverHD/releases/download/v1.5.0/InstaSaverHD-v1.5.0.apk)
 
 ---
 
 ## 🛠 Build Verification Summary
-- **Unit Tests**: 38 passed across `standard` and `pro` test tasks.
-- **Gradle Build**: Successfully assembled `StandardRelease` and `ProRelease` variants.
+- **Unit Tests**: 19 passed across unit test tasks.
+- **Gradle Build**: Successfully assembled `Release` APK.
