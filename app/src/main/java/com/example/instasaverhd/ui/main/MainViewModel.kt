@@ -35,6 +35,7 @@ data class MainUiState(
     val snackbarMessage: String? = null,
     val updateInfo: UpdateInfo? = null,
     val isDownloadingUpdate: Boolean = false,
+    val updateProgress: Int = 0,
     val showUpdateDialog: Boolean = false
 )
 
@@ -83,20 +84,51 @@ class MainViewModel(
         val info = _uiState.value.updateInfo ?: return
         val manager = updateManager ?: return
 
-        _uiState.update { it.copy(isDownloadingUpdate = true) }
+        _uiState.update {
+            it.copy(
+                isDownloadingUpdate = true,
+                updateProgress = 0
+            )
+        }
 
         val fileName = "InstaSaverHD-v${info.latestVersion}-update.apk"
-        manager.downloadUpdateApk(info.downloadUrl, fileName) { downloadId ->
-            _uiState.update {
-                it.copy(
-                    snackbarMessage = "Downloading update in background... Check notifications."
-                )
+        viewModelScope.launch {
+            val result = manager.downloadUpdateApkDirect(info.downloadUrl, fileName) { progress ->
+                _uiState.update { currentState ->
+                    currentState.copy(updateProgress = progress)
+                }
             }
+
+            result.fold(
+                onSuccess = { apkFile ->
+                    _uiState.update {
+                        it.copy(
+                            isDownloadingUpdate = false,
+                            showUpdateDialog = false,
+                            snackbarMessage = "Update downloaded! Opening installer..."
+                        )
+                    }
+                    manager.installApkFromFile(apkFile)
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            isDownloadingUpdate = false,
+                            snackbarMessage = "Failed to download update: ${error.message}"
+                        )
+                    }
+                }
+            )
         }
     }
 
     fun dismissUpdateDialog() {
-        _uiState.update { it.copy(showUpdateDialog = false) }
+        _uiState.update {
+            it.copy(
+                showUpdateDialog = false,
+                isDownloadingUpdate = false
+            )
+        }
     }
 
     fun onUrlChanged(newUrl: String) {

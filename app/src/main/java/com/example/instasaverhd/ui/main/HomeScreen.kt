@@ -101,6 +101,7 @@ fun HomeScreenContent(
         UpdateDialog(
             updateInfo = uiState.updateInfo,
             isDownloading = uiState.isDownloadingUpdate,
+            updateProgress = uiState.updateProgress,
             onUpdateClick = onUpdateClick,
             onDismissClick = onDismissUpdateClick
         )

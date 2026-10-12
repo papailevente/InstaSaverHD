@@ -16,8 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -40,6 +40,7 @@ import com.example.instasaverhd.ui.theme.InstagramGradient
 fun UpdateDialog(
     updateInfo: UpdateInfo,
     isDownloading: Boolean,
+    updateProgress: Int = 0,
     onUpdateClick: () -> Unit,
     onDismissClick: () -> Unit
 ) {
@@ -109,17 +110,25 @@ fun UpdateDialog(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 if (isDownloading) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        LinearProgressIndicator(
+                            progress = { updateProgress / 100f },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp)),
                             color = InstaPink,
-                            strokeWidth = 2.dp
+                            trackColor = Color(0xFF334155)
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Downloading update...",
+                            text = if (updateProgress > 0) "Downloading update: $updateProgress%" else "Starting download...",
                             color = Color.White,
-                            fontSize = 14.sp
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 } else {
@@ -131,7 +140,7 @@ fun UpdateDialog(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(text = "Later", color = Color(0xFF94A3B8))
+                            Text(text = "Later", color = Color.White)
                         }
 
                         Spacer(modifier = Modifier.width(12.dp))

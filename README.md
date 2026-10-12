@@ -4,19 +4,19 @@
 
 ---
 
-## 📥 Direct APK Download (v1.5.0)
+## 📥 Direct APK Download (v1.6.0)
 
 Download the official single Android APK directly from the repository:
 
-- 📱 **[Download InstaSaver HD APK v1.5.0](https://github.com/papailevente/InstaSaverHD/releases/download/v1.5.0/InstaSaverHD-v1.5.0.apk)** (`com.example.instasaverhd`)
+- 📱 **[Download InstaSaver HD APK v1.6.0](https://github.com/papailevente/InstaSaverHD/releases/download/v1.6.0/InstaSaverHD-v1.6.0.apk)** (`com.example.instasaverhd`)
 
 ---
 
 ## 🌟 Features
 
+- **In-App Auto-Update & Real-Time Progress Bar**: Detects new GitHub releases on launch, streams update downloads with live progress percentages (0-100%), and opens the package installer automatically.
 - **Open Public Cobalt Instances & JWT Bypass**: Bypasses private JWT auth restrictions by automatically routing through open public Cobalt v10 server instances (`api.cobalt.tools`, `cobalt.api.scraye.com`, `cobalt.qtf.rs`, `cobalt.stream`, `cobalt-api.kwiatekmom.pl`, `cobalt.xyx.moe`).
 - **Clean User Guidance**: Sanitizes API response errors to hide technical codes (`error.api.auth.jwt.missing`) and show clear, human-readable guidance.
-- **Auto-Update Checker & In-App Installer**: Automatically checks GitHub Releases on startup and prompts the user to download and install new version updates.
 - **System "Share To" Integration**: Share Instagram links directly to InstaSaver HD from Signal, WhatsApp, Instagram, or Chrome.
 - **Single-Tap URL Fetching & Validation**: Auto-cleans Instagram links and strips surrounding message text automatically.
 - **Embedded ExoPlayer Preview**: Play HD video previews directly inside the home feed before downloading.

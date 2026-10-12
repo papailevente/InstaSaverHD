@@ -1,6 +1,5 @@
 package com.example.instasaverhd.data.repository
 
-import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -11,7 +10,10 @@ import com.example.instasaverhd.data.remote.GitHubReleaseService
 import com.example.instasaverhd.data.remote.NetworkClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 data class UpdateInfo(
     val isUpdateAvailable: Boolean = false,
@@ -57,20 +59,60 @@ class UpdateManager(
         }
     }
 
-    fun downloadUpdateApk(downloadUrl: String, fileName: String, onEnqueue: (Long) -> Unit) {
-        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val uri = Uri.parse(downloadUrl)
+    suspend fun downloadUpdateApkDirect(
+        downloadUrl: String,
+        fileName: String,
+        onProgress: (Int) -> Unit
+    ): Result<File> = withContext(Dispatchers.IO) {
+        try {
+            val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+                ?: context.cacheDir
+            val destinationFile = File(downloadsDir, fileName)
+            if (destinationFile.exists()) {
+                destinationFile.delete()
+            }
 
-        val request = DownloadManager.Request(uri).apply {
-            setTitle("Downloading InstaSaver HD Update")
-            setDescription("Downloading version update APK")
-            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, fileName)
-            setMimeType("application/vnd.android.package-archive")
+            val client = OkHttpClient.Builder()
+                .followRedirects(true)
+                .followSslRedirects(true)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build()
+
+            val request = Request.Builder()
+                .url(downloadUrl)
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36")
+                .build()
+
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful || response.body == null) {
+                return@withContext Result.failure(Exception("Failed to download update file (HTTP ${response.code})"))
+            }
+
+            val body = response.body!!
+            val totalBytes = body.contentLength()
+            var bytesDownloaded = 0L
+
+            body.byteStream().use { inputStream ->
+                destinationFile.outputStream().use { outputStream ->
+                    val buffer = ByteArray(16 * 1024)
+                    var bytesRead: Int
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                        outputStream.write(buffer, 0, bytesRead)
+                        bytesDownloaded += bytesRead
+                        if (totalBytes > 0) {
+                            val progress = ((bytesDownloaded * 100) / totalBytes).toInt()
+                            onProgress(progress)
+                        }
+                    }
+                }
+            }
+
+            Result.success(destinationFile)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
         }
-
-        val downloadId = downloadManager.enqueue(request)
-        onEnqueue(downloadId)
     }
 
     fun installApkFromFile(file: File) {
